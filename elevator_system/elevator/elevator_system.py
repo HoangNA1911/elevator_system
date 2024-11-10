@@ -84,9 +84,11 @@ class ElevatorSystem:
                 elevator.add_target_floor(floor_number=floor_number)
                 best_elevator = elevator
                 break
-
+        self.request_queue.append((floor_number, direction))
         return best_elevator
 
     def step(self):
         """Run for each 2 seconds move all elevator"""
-        pass
+        for elevator in self.elevators:
+            elevator.move()
+

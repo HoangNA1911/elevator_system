@@ -1,6 +1,9 @@
 from django.db import models
+from django.db.models import IntegerField
+
 # Create your models here.
 
+MAX_FLOOR = 10
 
 class Elevator(models.Model):
     STATUS_CHOICES = [
@@ -20,7 +23,23 @@ class Elevator(models.Model):
     is_open = models.BooleanField(default=False)
 
     def move(self):
-        pass
+        if self.target_floors:
+            if self.status == "up":
+                if self.current_floor + 1 <= MAX_FLOOR:
+                    self.current_floor += 1
+            elif self.status == "down":
+                if self.current_floor > 0:
+                    self.current_floor -= 1
+
+        if self.current_floor in self.target_floors:
+            self.target_floors.remove(self.current_floor)
+        if not self.target_floors:
+            self.status = "idle"
+
+        self.save()
+
+
+
 
     def open_door(self):
         self.is_open = True

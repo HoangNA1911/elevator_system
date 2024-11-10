@@ -39,7 +39,18 @@ def call_elevator(request):
 
     elevator.add_target_floor(floor_number=request_floor)
 
-    return Response({"message": "Elevator is coming"},
-                    status=status.HTTP_200_OK)
+    data = ElevatorSerializer(elevator).data
+    return Response(
+        {
+            "message": "Elevator is coming",
+            "elevator": data,
+        },
+        status=status.HTTP_200_OK,
+    )
 
+
+@api_view(["POST"])
+def step(request):
+    elevator_system.step()
+    return Response({"message": "move all elev"}, status=status.HTTP_200_OK)
 
