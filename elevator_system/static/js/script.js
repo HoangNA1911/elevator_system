@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     moveAndFetchElevatorData();
-    setInterval(moveAndFetchElevatorData, 2000);
+    setInterval(moveAndFetchElevatorData, 500);
 });
 
 function moveAndFetchElevatorData() {
@@ -21,71 +21,84 @@ function moveAndFetchElevatorData() {
 }
 
 function fetchElevatorData() {
-    fetch('/elevator/')
+    fetch('/api/fetch-data/')
         .then(response => response.json())
         .then(data => renderElevators(data))
         .catch(error => console.error('Error fetching elevator data:', error));
 }
 
+function renderControl() {
+    const controlContainer = document.getElementById('control')
+    controlContainer.innerHTML = '';
+    const controlDiv = document.createElement('div');
+    controlDiv.classList.add('control');
+    for (let floor = 10; floor >=1; floor--) {
+        const floorDiv = document.createElement('div');
+        floorDiv.classList.add('floor');
+
+        if (floor < 10) {
+            const upArrow = document.createElement('button');
+            upArrow.textContent = '↑';
+            upArrow.classList.add('arrow', 'up-arrow');
+            upArrow.addEventListener('click', () => {
+                callElevator(floor, 'up');
+            });
+            floorDiv.appendChild(upArrow);
+        }
+
+        if (floor > 1) {
+            const downArrow = document.createElement('button');
+            downArrow.textContent = '↓';
+            downArrow.classList.add('arrow', 'down-arrow');
+            downArrow.addEventListener('click', () => {
+                callElevator(floor, 'down');
+            });
+            floorDiv.appendChild(downArrow);
+        }
+
+        controlDiv.appendChild(floorDiv);
+    }
+    controlContainer.appendChild(controlDiv);
+}
+
 function renderElevators(elevators) {
-    const elevatorsDiv = document.getElementById('elevators');
-    const floorControls = document.getElementById('floor-controls');
-
-    elevatorsDiv.innerHTML = ''; // Xóa dữ liệu thang máy cũ
-    floorControls.innerHTML = ''; // Xóa dữ liệu nút bấm tầng cũ
-
+    const elevatorContainer = document.getElementById('elevator-container');
+    elevatorContainer.innerHTML = '';
     elevators.forEach(elevator => {
         const elevatorDiv = document.createElement('div');
-        elevatorDiv.classList.add('elevator');
-
-        // Tạo các tầng từ tầng 10 xuống tầng 1 (để phù hợp với giao diện từ trên xuống)
-        for (let floor = 10; floor >= 1; floor--) {
+        elevatorDiv.classList.add('elevator-column');
+        for (let floor = 1; floor <= 10; floor++) {
             const floorDiv = document.createElement('div');
             floorDiv.classList.add('floor');
 
-            // Thêm các lớp cho tầng hiện tại hoặc tầng có yêu cầu
             if (floor === elevator.current_floor) {
                 floorDiv.classList.add('current-floor');
             } else if (elevator.target_floors.includes(floor)) {
                 floorDiv.classList.add(elevator.status === 'up' ? 'up' : 'down');
             }
 
-            // Nhãn hiển thị số tầng
-            const floorLabel = document.createElement('span');
+            const floorLabel = document.createElement('div');
             floorLabel.textContent = floor;
+            floorLabel.classList.add('floor-label')
+
+
+            floorLabel.addEventListener('click', () => {
+                stopElevator(elevator.id, floor);
+            });
+
             floorDiv.appendChild(floorLabel);
-
-            // Nút mũi tên lên (nếu không phải tầng trên cùng)
-            if (floor < 10) {
-                const upArrow = document.createElement('button');
-                upArrow.textContent = '↑';
-                upArrow.classList.add('arrow', 'up-arrow');
-                upArrow.addEventListener('click', () => {
-                    callElevator(elevator.id, floor, 'up');
-                });
-                floorDiv.appendChild(upArrow);
-            }
-
-            // Nút mũi tên xuống (nếu không phải tầng trệt)
-            if (floor > 1) {
-                const downArrow = document.createElement('button');
-                downArrow.textContent = '↓';
-                downArrow.classList.add('arrow', 'down-arrow');
-                downArrow.addEventListener('click', () => {
-                    callElevator(elevator.id, floor, 'down');
-                });
-                floorDiv.appendChild(downArrow);
-            }
-
             elevatorDiv.appendChild(floorDiv);
         }
 
         elevatorContainer.appendChild(elevatorDiv);
     });
+
+    renderControl()
 }
 
 
-function callElevator(elevatorId, floor, direction) {
+
+function callElevator(floor, direction) {
     fetch('/api/call-elevator/', {
         method: 'POST',
         headers: {
@@ -108,6 +121,7 @@ function callElevator(elevatorId, floor, direction) {
 
 
 function stopElevator(elevatorId, floor) {
+    console.log('click', floor)
     fetch('/api/choose-target-floor/', {
         method: 'POST',
         headers: {
@@ -121,8 +135,7 @@ function stopElevator(elevatorId, floor) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log(data.message); // Show API response message
-
+        console.log(data.message);
         fetchElevatorData();
     })
     .catch(error => console.error('Error stopping elevator:', error));

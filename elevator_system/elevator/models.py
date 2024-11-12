@@ -1,7 +1,6 @@
 from time import sleep
 
 from django.db import models
-from django.db.models import IntegerField
 
 # Create your models here.
 
@@ -48,7 +47,6 @@ class Elevator(models.Model):
                     and self.status == self.target_direction):
                 self.target_floors.remove(self.current_floor)
                 self.open_door()
-                sleep(2)
                 self.close_door()
             if not self.target_floors:
                 # If elev don't have any request it is idle

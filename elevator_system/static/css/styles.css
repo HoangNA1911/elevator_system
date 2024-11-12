@@ -1,59 +1,41 @@
 #elevator-container {
     display: flex;
     justify-content: center;
-    gap: 20px;
 }
 
-#elevators, #floor-controls {
+.elevator-column {
     display: flex;
-    flex-direction: column-reverse; /* Để tầng 1 ở dưới cùng */
-}
-
-.floor-controls {
-    display: flex;
-    justify-content: center;
+    flex-direction: column-reverse;
     align-items: center;
-    gap: 5px;
-    margin-bottom: 10px; /* Khoảng cách giữa các tầng */
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 100px;
 }
-
 .floor {
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 50px; /* Đảm bảo chiều cao đồng đều cho mỗi tầng */
-    border-top: 1px solid #333;
-    box-sizing: border-box;
+    margin-bottom: 5px;
 }
-
-.floor.current-floor {
-    background-color: red; /* Nền đỏ cho tầng hiện tại */
-    color: white;
-    font-weight: bold;
-}
-
-.floor.up {
-    background-color: yellow; /* Nền vàng cho tầng có yêu cầu lên */
-}
-
-.floor.down {
-    background-color: #ADD8E6; /* Nền xanh nhạt cho tầng có yêu cầu xuống */
-}
-
 .arrow {
-    position: absolute;
-    font-size: 18px; /* Tăng kích thước để rõ ràng hơn */
+    margin: 2px;
 }
-
-.up-arrow {
-    top: 5px;
-    right: 5px;
+.current-floor {
+    background-color: red;
+}
+.up {
     color: green;
 }
+.down {
+    color: red;
+}
+.floor-label{
+    border: 1px solid #000;
+    width: 80px;
+    height: 24px;
+    text-align: center;
+}
 
-.down-arrow {
-    bottom: 5px;
-    right: 5px;
-    color: blue;
+.control {
+    padding:10px;
 }

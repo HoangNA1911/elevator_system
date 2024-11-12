@@ -23,6 +23,13 @@ class ElevatorViewSet(viewsets.ModelViewSet):
     queryset = Elevator.objects.all()
 
 
+@api_view(['GET'])
+def fetch_elevator(request):
+    elevators = Elevator.objects.all()
+    data = ElevatorSerializer(elevators, many=True).data
+    return Response(data=data, status=status.HTTP_200_OK)
+
+
 @api_view(['POST'])
 def call_elevator(request):
     """Find the best elevator and append floor number into target list"""
